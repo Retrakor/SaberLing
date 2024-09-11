@@ -1,0 +1,72 @@
+<script lang="ts">
+    let user = {
+      name: 'John Doe',
+      avatar: 'https://cdn.discordapp.com/avatars/123456789/abcdef123456.png',
+      rank: 42,
+      score: 8750,
+      achievements: ['First Win', 'Consecutive Wins', 'High Score']
+    };
+  </script>
+  
+  <h1>My Profile</h1>
+  
+  <div class="profile-container">
+    <img src={user.avatar} alt="Profile Avatar" class="avatar" />
+    <h2>{user.name}</h2>
+    <p>Rank: {user.rank}</p>
+    <p>Score: {user.score}</p>
+  
+    <h3>Achievements</h3>
+    <ul>
+      {#each user.achievements as achievement}
+        <li>{achievement}</li>
+      {/each}
+    </ul>
+  </div>
+  
+  <style>
+    h1 {
+      font-size: 2rem;
+      margin-bottom: 1rem;
+    }
+  
+    .profile-container {
+      background-color: #1a1a1a;
+      padding: 2rem;
+      border-radius: 8px;
+      max-width: 400px;
+      margin: 0 auto;
+    }
+  
+    .avatar {
+      width: 128px;
+      height: 128px;
+      border-radius: 50%;
+      margin-bottom: 1rem;
+    }
+  
+    h2 {
+      margin: 0 0 1rem;
+      color: #4a90e2;
+    }
+  
+    p {
+      margin: 0.5rem 0;
+    }
+  
+    h3 {
+      margin: 1.5rem 0 0.5rem;
+    }
+  
+    ul {
+      list-style-type: none;
+      padding: 0;
+    }
+  
+    li {
+      margin-bottom: 0.5rem;
+      padding: 0.5rem;
+      background-color: #2a2a2a;
+      border-radius: 4px;
+    }
+  </style>
