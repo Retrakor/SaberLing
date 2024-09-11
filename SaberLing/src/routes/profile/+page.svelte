@@ -33,11 +33,11 @@
     ];
   
     let playHistory = [
-      { month: 'Jan', count: 1000 },
+      { month: 'Jan', count: 3200 },
       { month: 'Feb', count: 1200 },
-      { month: 'Mar', count: 1500 },
+      { month: 'Mar', count: 1000 },
       { month: 'Apr', count: 1800 },
-      { month: 'May', count: 2000 },
+      { month: 'May', count: 567 },
       { month: 'Jun', count: 2200 },
     ];
   
@@ -61,19 +61,48 @@
         <svg width="${width}" height="${height}" xmlns="http://www.w3.org/2000/svg">
           <polyline
             fill="none"
-            stroke="#ff66aa"
+            stroke="#66ccff"
             stroke-width="2"
             points="${points}"
           />
           ${data.map((d, i) => `
-            <circle cx="${xScale(i)}" cy="${yScale(d.rank)}" r="4" fill="#ff66aa" />
+            <circle cx="${xScale(i)}" cy="${yScale(d.rank)}" r="4" fill="#66ccff" />
             <text x="${xScale(i)}" y="${yScale(d.rank) - 10}" text-anchor="middle" font-size="12" fill="#ffffff">${d.rank}</text>
+          `).join('')}
+        </svg>
+      `;
+    }
+
+    function createPlayHistoryGraph(data) {
+      const width = 1000;
+      const height = 200;
+      const padding = 30;
+      const maxCount = Math.max(...data.map(d => d.count));
+  
+      const xScale = (i) => (i / (data.length - 1)) * (width - 2 * padding) + padding;
+      const yScale = (count) => height - ((count / maxCount) * (height - 2 * padding) + padding);
+  
+      const points = data.map((d, i) => `${xScale(i)},${yScale(d.count)}`).join(' ');
+  
+      return `
+        <svg width="${width}" height="${height}" xmlns="http://www.w3.org/2000/svg">
+          <polyline
+            fill="none"
+            stroke="#66ccff"
+            stroke-width="2"
+            points="${points}"
+          />
+          ${data.map((d, i) => `
+            <circle cx="${xScale(i)}" cy="${yScale(d.count)}" r="4" fill="#66ccff" />
+            <text x="${xScale(i)}" y="${yScale(d.count) - 10}" text-anchor="middle" font-size="12" fill="#ffffff">${d.count}</text>
+            <text x="${xScale(i)}" y="${height - 10}" text-anchor="middle" font-size="12" fill="#ffffff">${d.month}</text>
           `).join('')}
         </svg>
       `;
     }
   </script>
   
+
   <div class="profile-container">
     <section class="profile-header">
       <div class="banner" style="background-image: url({user.banner});">
@@ -85,6 +114,7 @@
     <div class="content-wrapper">
       <div class="main-content">
         <section class="rankings">
+          <div class="content-wrapper2">
           <div class="rank-box">
             <h2>Global Ranking</h2>
             <p class="rank">#{user.globalRank}</p>
@@ -93,6 +123,7 @@
             <h2>Country Ranking</h2>
             <p class="rank">#{user.countryRank}</p>
           </div>
+        </div>
           <div class="rank-progression">
             <h2>Rank Progression (Last 90 days)</h2>
             {@html createRankGraph(rankData)}
@@ -126,7 +157,7 @@
     </div>
   
     <section class="top-plays">
-      <h2>Best Performance</h2>
+      <h2>Best Performance (30)</h2>
       {#each topPlays as play}
         <div class="beatmap-section">
           <div class="beatmap-info">
@@ -137,23 +168,16 @@
             <span class="stat" title="Score">{play.score.toLocaleString()}</span>
             <span class="stat" title="Accuracy">{play.accuracy.toFixed(2)}%</span>
             <span class="stat" title="Miss Count">{play.missCount}</span>
-            <span class="stat" title="PP">{play.pp}pp</span>
+            <span class="ppstat" title="PP">{play.pp}pp </span>
           </div>
         </div>
       {/each}
     </section>
   
-    <section class="play-history">
-      <h2>Play History</h2>
-      <!--<ResponsiveContainer width="100%" height={300}>
-        <LineChart data={playHistory}>
-          <XAxis dataKey="month" />
-          <YAxis />
-          <Tooltip />
-          <Line type="monotone" dataKey="count" stroke="#ff66aa" />
-        </LineChart>
-      </ResponsiveContainer>-->
-    </section>
+      <section class="play-history">
+        <h2>Play History</h2>
+        {@html createPlayHistoryGraph(playHistory)}
+      </section>
   </div>
   
   <style>
@@ -203,6 +227,12 @@
       display: flex;
       gap: 2rem;
     }
+
+    .content-wrapper2 {
+      display: flex;
+      gap: 1rem;
+      border-bottom: #999;
+    }
   
     .main-content {
       display: flex;
@@ -219,13 +249,19 @@
     .rank-box {
       flex: 1;
       text-align: center;
-      margin-bottom: 1rem;
+      margin-bottom: 0.7rem;
+    }
+
+    .rank-box2 {
+      flex: 1;
+      text-align: center;
+      margin-bottom: 0.7rem;
     }
   
     .rank {
-      font-size: 1.3rem;
+      font-size: 1rem;
       font-weight: bold;
-      color: #ff66aa;
+      color: #66ccff;
     }
   
     .rank-progression {
@@ -240,7 +276,7 @@
     }
   
     .stat-label {
-      color: #66ccff;
+      color: #999;
     }
   
     .stat-value {
@@ -293,8 +329,14 @@
       position: relative;
       max-width: 100px;
     }
+
+    .ppstat {
+      position: relative;
+      max-width: 100px;
+      color: #66ccff;
+    }
   
-    .stat:hover::after {
+    .stat:hover::after, .ppstat:hover::after {
       content: attr(title);
       position: absolute;
       top: -20px;
